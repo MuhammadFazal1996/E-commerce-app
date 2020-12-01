@@ -58,7 +58,7 @@ class RegisterPageState extends State<RegisterPage> {
         padding: EdgeInsets.only(top: 20.0),
         child: TextFormField(
             onSaved: (val) => _password = val,
-            validator: (val) => val.length < 6 ? 'Password  too short' : null,
+            validator: (val) => val.length < 6 ? 'Password is short' : null,
             obscureText: _obscureText,
             decoration: InputDecoration(
                 suffixIcon: GestureDetector(
