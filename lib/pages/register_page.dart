@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -9,8 +10,11 @@ class RegisterPage extends StatefulWidget {
 
 class RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
-  bool _obscureText = true;
+  bool _isSubmitting = false, _obscureText = true;
 
   String _username, _password, _email;
 
@@ -84,21 +88,25 @@ class RegisterPageState extends State<RegisterPage> {
       padding: EdgeInsets.only(top: 20.0),
       child: Column(
         children: [
-          RaisedButton(
-            child: Text(
-              'Submit',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText2
-                  .copyWith(color: Colors.black),
-            ),
-            elevation: 8.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            ),
-            color: Theme.of(context).primaryColor,
-            onPressed: _submit,
-          ),
+          _isSubmitting
+              ? CircularProgressIndicator(
+                  valueColor:
+                      AlwaysStoppedAnimation(Theme.of(context).primaryColor))
+              : RaisedButton(
+                  child: Text(
+                    'Submit',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText2
+                        .copyWith(color: Colors.black),
+                  ),
+                  elevation: 8.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  color: Theme.of(context).primaryColor,
+                  onPressed: _submit,
+                ),
           FlatButton(
             child: Text('Existing user? Login'),
             onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
@@ -113,13 +121,71 @@ class RegisterPageState extends State<RegisterPage> {
 
     if (form.validate()) {
       form.save();
-      print('Username: $_username, Password: $_password, Email: $_email');
+      _registerUser();
     }
+  }
+
+  void _registerUser() async {
+    setState(() {
+      _isSubmitting = true;
+    });
+    http.Response response = await http.post(
+        'http://192.168.1.108:1337/auth/local/register',
+        body: {"username": _username, "email": _email, "password": _password});
+
+    final responseData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      setState(() {
+        _isSubmitting = false;
+      });
+      _showSuccessSnack();
+      _redirectUser();
+      print(responseData);
+    } else {
+      setState(() {
+        _isSubmitting = false;
+      });
+      final String errorMsg =
+          responseData['message'][0]['messages'][0]['message'].toString();
+      print('---$errorMsg');
+      _showErrorSnack(errorMsg);
+    }
+  }
+
+  void _showSuccessSnack() {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.grey,
+      content: Text(
+        'User $_username successfully created!',
+        style: TextStyle(color: Colors.green),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+    _formKey.currentState.reset();
+  }
+
+  void _showErrorSnack(String errorMsg) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.grey,
+      content: Text(
+        errorMsg,
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+    throw Exception('Error registering: $errorMsg');
+  }
+
+  void _redirectUser() {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, '/products');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Register'),
       ),
