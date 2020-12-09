@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -114,7 +115,7 @@ class LoginPageState extends State<LoginPage> {
       _isSubmitting = true;
     });
     http.Response response = await http.post(
-        'http://192.168.1.108:1337/auth/local',
+        'http://192.168.1.105:1337/auth/local',
         body: {"identifier": _email, "password": _password});
 
     final responseData = json.decode(response.body);
@@ -122,6 +123,7 @@ class LoginPageState extends State<LoginPage> {
       setState(() {
         _isSubmitting = false;
       });
+      _storeUserData(responseData);
       _showSuccessSnack();
       _redirectUser();
       print(responseData);
@@ -134,6 +136,13 @@ class LoginPageState extends State<LoginPage> {
       print('---$errorMsg');
       _showErrorSnack(errorMsg);
     }
+  }
+
+  void _storeUserData(responseData) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> user = responseData['user'];
+    user.putIfAbsent('jwt', () => responseData['jwt']);
+    prefs.setString('user', json.encode(user));
   }
 
   void _showSuccessSnack() {

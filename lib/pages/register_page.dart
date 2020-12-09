@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class RegisterPage extends StatefulWidget {
   @override
   RegisterPageState createState() => RegisterPageState();
@@ -130,7 +132,7 @@ class RegisterPageState extends State<RegisterPage> {
       _isSubmitting = true;
     });
     http.Response response = await http.post(
-        'http://192.168.1.108:1337/auth/local/register',
+        'http://192.168.1.105:1337/auth/local/register',
         body: {"username": _username, "email": _email, "password": _password});
 
     final responseData = json.decode(response.body);
@@ -138,6 +140,7 @@ class RegisterPageState extends State<RegisterPage> {
       setState(() {
         _isSubmitting = false;
       });
+      _storeUserData(responseData);
       _showSuccessSnack();
       _redirectUser();
       print(responseData);
@@ -150,6 +153,13 @@ class RegisterPageState extends State<RegisterPage> {
       print('---$errorMsg');
       _showErrorSnack(errorMsg);
     }
+  }
+
+  void _storeUserData(responseData) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> user = responseData['user'];
+    user.putIfAbsent('jwt', () => responseData['jwt']);
+    prefs.setString('user', json.encode(user));
   }
 
   void _showSuccessSnack() {
