@@ -65,15 +65,30 @@ class _ProductsPageState extends State<ProductsPage> {
       appBar: _appBar,
       body: Container(
         decoration: gradientBackground,
-        child: Column(
-          children: [
-            Row(
+        child: StoreConnector<AppState, AppState>(
+          converter: (store) => store.state,
+          builder: (_, state) {
+            return Column(
               children: [
-                Text('Products Page'),
+                Expanded(
+                  child: SafeArea(
+                    top: false,
+                    bottom: false,
+                    child: GridView.builder(
+                        itemCount: state.products.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+
+                        ),
+                        itemBuilder: (context, i) =>
+                          Text(state.products[i]['name'])
+                    ),
+                  ),
+                )
               ],
-            ),
-          ],
-        ) ,
+            );
+          }
+        )
       ),
     );
   }
