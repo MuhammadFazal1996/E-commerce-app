@@ -13,8 +13,7 @@ class RegisterPage extends StatefulWidget {
 class RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+
 
   bool _isSubmitting = false, _obscureText = true;
 
@@ -132,7 +131,7 @@ class RegisterPageState extends State<RegisterPage> {
       _isSubmitting = true;
     });
     http.Response response = await http.post(
-        'http://192.168.1.105:1337/auth/local/register',
+        'http://192.168.18.6:1337/auth/local/register',
         body: {"username": _username, "email": _email, "password": _password});
 
     final responseData = json.decode(response.body);
