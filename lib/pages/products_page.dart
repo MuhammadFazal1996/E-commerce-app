@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce/widgets/product_item.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_ecommerce/models/app_state.dart';
 
@@ -81,7 +82,7 @@ class _ProductsPageState extends State<ProductsPage> {
 
                         ),
                         itemBuilder: (context, i) =>
-                          Text(state.products[i]['name'])
+                            ProductItem(item: state.products[i])
                     ),
                   ),
                 )
