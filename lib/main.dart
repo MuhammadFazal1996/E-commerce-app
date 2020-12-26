@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce/pages/cart_page.dart';
 import 'package:flutter_ecommerce/pages/login_page.dart';
 import 'package:flutter_ecommerce/pages/products_page.dart';
 import 'package:flutter_ecommerce/pages/register_page.dart';
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
                 // dispatch an action (getUserAction) to grab user data
               }),
           '/login': (BuildContext context) => LoginPage(),
-          '/register': (BuildContext context) => RegisterPage()
+          '/register': (BuildContext context) => RegisterPage(),
+          '/cart': (BuildContext context) => CartPage(),
         },
         theme: ThemeData(
           brightness: Brightness.dark,
