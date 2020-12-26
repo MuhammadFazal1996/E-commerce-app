@@ -6,12 +6,13 @@ import 'package:flutter_ecommerce/models/app_state.dart';
 import 'package:flutter_ecommerce/redux/reducers.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_logging/redux_logging.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:flutter_ecommerce/redux/actions.dart';
 
 void main() {
   final store = Store<AppState>(appReducer,
-      initialState: AppState.initial(), middleware: [thunkMiddleware]);
+      initialState: AppState.initial(), middleware: [thunkMiddleware, LoggingMiddleware.printer()]);
   runApp(MyApp(store: store));
 }
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter E-Commerce',
         routes: {
-          '/products': (BuildContext context) => ProductsPage(onInit: () {
+          '/': (BuildContext context) => ProductsPage(onInit: () {
                 StoreProvider.of<AppState>(context).dispatch(getUserAction);
                 StoreProvider.of<AppState>(context).dispatch(getProductsAction);
                 // dispatch an action (getUserAction) to grab user data
@@ -39,11 +40,13 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.cyan[400],
           accentColor: Colors.deepOrange[200],
           textTheme: TextTheme(
+
               headline5: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-              headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-              bodyText2: TextStyle(fontSize: 18.0)),
+              headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic), // title
+              bodyText2: TextStyle(fontSize: 18.0)), // body1
+
         ),
-        home: RegisterPage(),
+
       ),
     );
   }
