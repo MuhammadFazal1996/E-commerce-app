@@ -112,6 +112,8 @@ class LoginPageState extends State<LoginPage> {
 
   void _registerUser() async {
     setState(() {
+
+
       _isSubmitting = true;
     });
     http.Response response = await http.post(
