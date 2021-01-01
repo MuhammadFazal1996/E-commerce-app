@@ -33,6 +33,7 @@ dependencies:
   flutter_redux: ^0.7.0
   redux_thunk: ^0.3.0
   redux_logging: ^0.4.0
+  badges: ^1.1.6
 
 dev_dependencies:
   flutter_test:
